@@ -1,7 +1,7 @@
-cmd_/host/lab2/hello/hello.o := gcc -m32 -Wp,-MD,/host/lab2/hello/.hello.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.2/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -O2 -pipe -msoft-float -mpreferred-stack-boundary=2  -march=i686  -mregparm=3 -ffreestanding -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -Iinclude/asm-i386/mach-default -fomit-frame-pointer  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign   -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(hello)"  -D"KBUILD_MODNAME=KBUILD_STR(hello)" -c -o /host/lab2/hello/.tmp_hello.o /host/lab2/hello/hello.c
+cmd_/host/so/lab2/hello/hello.o := gcc -m32 -Wp,-MD,/host/so/lab2/hello/.hello.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.2/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -O2 -pipe -msoft-float -mpreferred-stack-boundary=2  -march=i686  -mregparm=3 -ffreestanding -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -Iinclude/asm-i386/mach-default -fomit-frame-pointer  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign   -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(hello)"  -D"KBUILD_MODNAME=KBUILD_STR(hello)" -c -o /host/so/lab2/hello/.tmp_hello.o /host/so/lab2/hello/hello.c
 
-deps_/host/lab2/hello/hello.o := \
-  /host/lab2/hello/hello.c \
+deps_/host/so/lab2/hello/hello.o := \
+  /host/so/lab2/hello/hello.c \
   include/linux/init.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/hotplug.h) \
@@ -294,6 +294,6 @@ deps_/host/lab2/hello/hello.o := \
     $(wildcard include/config/mgeode/lx.h) \
     $(wildcard include/config/regparm.h) \
 
-/host/lab2/hello/hello.o: $(deps_/host/lab2/hello/hello.o)
+/host/so/lab2/hello/hello.o: $(deps_/host/so/lab2/hello/hello.o)
 
-$(deps_/host/lab2/hello/hello.o):
+$(deps_/host/so/lab2/hello/hello.o):
