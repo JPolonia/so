@@ -1,0 +1,3 @@
+bin/counter /m1 20
+bin/counter /m1 10
+bin/ger_cl /m1 20
