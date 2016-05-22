@@ -1,5 +1,5 @@
 /*
- * Streamlined header file for the 16550A, which is the one supported
+ * Streamlined header file for the 16450, which is the one supported
  *  by the vbox, based on:
  *  
  * include/linux/serial_reg.h
@@ -16,6 +16,19 @@
 
 #ifndef _SERIAL_REG_H
 #define _SERIAL_REG_H
+
+/*
+ * Device Driver specific stuff
+ */
+
+#define ECHO_MAJOR 0   /* dynamic major by default */
+#define ECHO_DEVS 4    /* echo0 through echo3 */
+
+/*
+ * The different configurable parameters
+ */
+extern int echo_major;     /* echo.c */
+extern int echo_devs;
 
 /*
  * DLAB=0
@@ -39,17 +52,7 @@
 #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
 
 #define UART_FCR	2	/* Out: FIFO Control Register */
-/* Check Section 8.5 on pg 17 of the PC16550D data sheet */
-#define UART_FCR_ENABLE_FIFO	0x01 /* Enable the FIFO */
-#define UART_FCR_CLEAR_RCVR	0x02 /* Clear the RCVR FIFO */
-#define UART_FCR_CLEAR_XMIT	0x04 /* Clear the XMIT FIFO */
-#define UART_FCR_DMA_SELECT	0x08 /* For DMA applications */
-
-#define UART_FCR_TRIGGER_MASK	0xC0 /* Mask for the FIFO trigger range */
-#define UART_FCR_TRIGGER_1	0x00 /* Mask for trigger set at 1 */
-#define UART_FCR_TRIGGER_4	0x40 /* Mask for trigger set at 4 */
-#define UART_FCR_TRIGGER_8	0x80 /* Mask for trigger set at 8 */
-#define UART_FCR_TRIGGER_14	0xC0 /* Mask for trigger set at 14 */
+/* Not supported by the VBox: emulates the 16450 */
 
 #define UART_LCR	3	/* Out: Line Control Register */
 /*
@@ -107,4 +110,3 @@
 #define UART_DIV_9600   12	/* Divisor for 9600 bps */
 
 #endif /* _SERIAL_REG_H */
-
