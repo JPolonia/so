@@ -27,12 +27,12 @@ int main(int argc, char **argv) {
     printf("Error opening file\n");
     exit(2);
   }
-	for(i=0;i<5;i++){
+	//for(i=0;i<5;i++){
 		read(fd, buffer, 30);
 		buffer[30]='\0';
 		printf("Recevido: %s \n",buffer);
-	}
-	write(fd,buffer,24);
+	//}
+	/*write(fd,buffer,24);
 	scanf("%d",&i);
 	write(fd,buffer,24);
 	 
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 	write(fd,buffer,71);
 	scanf("%d",&i);
 	write(fd,buffer,71);
-	scanf("%d",&i);
+	scanf("%d",&i);*/
 
 
   close(fd);
