@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main(int argc, char *argv[])
+{
+    printf("hello world (pid:%d)\n", (int) getpid());
+    int rc = fork();//creates child
+
+    if (rc < 0) { // fork failed; exit
+
+        fprintf(stderr, "fork failed\n");
+        exit(1);
+    } else if (rc == 0) { // child (new process)
+
+        printf("hello, I am child (pid:%d) and my parent is (pid:%d)\n", (int) getpid(),(int) getppid());
+
+        int neto = fork();
+        if (!neto) {
+        	 printf("hello, I am neto (pid:%d) and my parent is (pid:%d)\n"", (int) getpid(), (int) getppid());
+        } else exit(2);
+    } else {  // parent goes down this path (original process)
+
+        printf("hello, my child is %d \n", rc);
+        exit(0);
+    }
+
+    return 0;
+}
+

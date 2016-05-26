@@ -59,6 +59,7 @@ static int serp_init(void) {
     int i;
     int status = 0;
     unsigned char lcr = 0; //isto é o control byte
+    major = 0; //Alocar dinamicamente
     
     printk(KERN_ALERT "Echo, world\n");
     
@@ -75,7 +76,7 @@ static int serp_init(void) {
 
     lcr &= ~UART_LCR_DLAB; // desactivar o acesso ao registo Divisor Latch
     outb(lcr, COM1 + UART_LCR);
-    
+    /*--------END-UART-----------*/
     
     /* Alocar o Device e o seu Major */
     status = alloc_chrdev_region(&dev, baseMinor, serpMinors, "serp");
