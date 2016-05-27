@@ -34,8 +34,8 @@ static int serp_init(void); //Função de inicialização do device
 static void serp_exit(void); //Função de terminação do device
 //static void serp_setup_dev(struct serp_devices *device, int index); //Função de configuração/setup do módulo
 
-int serp_open(struct inode *inode, struct file *filep); //Função open do device
-int serp_release(struct inode *inode, struct file *filep); //Função de release do device
+int serp_open(struct inode *inode, struct file *filp); //Função open do device
+int serp_release(struct inode *inode, struct file *filp); //Função de release do device
 
 ssize_t serp_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos);
 ssize_t serp_write(struct file *filep, const char __user *buff, size_t count, loff_t *offp);
@@ -56,25 +56,25 @@ struct file_operations serpFops = {
 static int serp_init(void) {
 
     int i, result = 0;
-    unsigned char byte = 0;
+    unsigned char lcr = 0; //isto é o control byte
     
     printk(KERN_ALERT "%-10sSerial Port Device Driver - Polled Operation \n\n","INIT:");
- 
+    
     /*----------UART-CONFIGURATION--------*/    
-    //8-bit chars, 2 stop bits, parity even 
-    byte = UART_LCR_WLEN8 | UART_LCR_PARITY | UART_LCR_EPAR | UART_LCR_STOP;
-    outb(byte, COM1 + UART_LCR);
+    /*Configurar UART |8-bit chars, 2 stop bits, parity even, and 1200 bps|Because, we will not use interrupts, make sure that the UART is configured not to generate interrupts*/
+    lcr = UART_LCR_WLEN8 | UART_LCR_PARITY | UART_LCR_EPAR | UART_LCR_STOP;
+    outb(lcr, COM1 + UART_LCR);
     
-    //Acess to divisor latch
-    byte = byte | UART_LCR_DLAB; 
-    outb(byte, COM1 + UART_LCR);
+    lcr = lcr | UART_LCR_DLAB; // activar o acesso ao registo Divisor Latch
+    outb(lcr, COM1 + UART_LCR);
     
-    //Bitrate: 1200
+    //Configurar a velocidade (bitrate)
     outb(UART_DIV_1200, COM1+UART_DLL);
     outb(0, COM1+UART_DLM);
 
-    byte &= ~UART_LCR_DLAB; // desactivar o acesso ao registo Divisor Latch
-    outb(byte, COM1 + UART_LCR);
+    lcr &= ~UART_LCR_DLAB; // desactivar o acesso ao registo Divisor Latch
+    outb(lcr, COM1 + UART_LCR);
+
     major = ECHO_MAJOR;
     minor = serpMinor;
     /*--------------END-UART---------------*/
@@ -127,11 +127,11 @@ static int serp_init(void) {
     /*----------------END-----------------*/
       
 
-    /*Reservar o I/O port range - USAR DISABLESERIAL*/
+    /*Configuração da UART - reservar o I/O port range - USAR DISABLESERIAL*/
     result = request_region(COM1, 8, "UART");
     if (!result){
-        printk(KERN_WARNING "%-10sRequested I/O port in use! Please run disableserial.sh...","ERROR:");
-        return -EREMOTEIO;
+        printk(KERN_WARNING "%-10sRequest region failed! Please run disableserial.sh...","ERROR:");
+        return result;
     }
 
     
@@ -145,22 +145,18 @@ static void serp_exit(void) {
 
     printk(KERN_ALERT "%-10sSerial Port Device Driver - Polled Operation \n\n","EXIT:");
     
-    /*---FREE-CHAR-DEVICE-STRUCT----*/
     printk(KERN_INFO "%-10sRemoving %d devices (User defined)\n","INFO:",serp_nr_devs);
     for(i=0; i<serp_nr_devs; i++){
         cdev_del(&serpDevs[i].serpCharDev);
         printk(KERN_INFO "%-10sRemoved DEV: #%d  Minor: %d \n","", MKDEV(major, i), i);
     }
+    
     kfree(serpDevs);
-    /*----------------END-----------*/
     
-    /*------FREE-DEVICE-NUMBERS-----*/
     unregister_chrdev_region(MKDEV(major, 0), serp_nr_devs);
-
-    //Clear UART LCR 
-    outb(0x00, COM1+UART_LCR); 
+    outb(0x00, COM1+UART_LCR); // limpar configurações
     
-    //Liberta I/O port range 
+    //libertar a região previamente reservada no procedimento de init()
     release_region(COM1, 8);
     
     printk(KERN_INFO "\n%-10sSERP REMOVED!! \n\n","SUCCESS:");
@@ -205,10 +201,12 @@ ssize_t serp_read(struct file *filep, char __user *buff, size_t count, loff_t *o
     
     /*Adress for receive buffer and line status register */
     RX_adress = COM1 + UART_RX;
-    LSR_adress = COM1 + UART_LSR; 
+    LSR_adress = COM1 + UART_LSR;
+    
 
     while (1) {
         var = inb(LSR_adress);
+
         //Check for LSR errors (Frame, parity and overrun erros)
         if (var & (UART_LSR_FE | UART_LSR_OE | UART_LSR_PE)) { 
             printk(KERN_WARNING "%-10sFrame/Parity/Overrun error indicator %d\n","ERROR:");
@@ -250,45 +248,44 @@ ssize_t serp_write(struct file *filep, const char __user *buff, size_t count, lo
     
   printk(KERN_ALERT "%-10sWriting file... \n\n","WRITE:");
   
-  int i=0;
+  int i= 0;
   ssize_t sent=0; 
-  unsigned long error;
+  unsigned long result;
+  unsigned char var;
+  unsigned short int LSR_adress, TX_adress;
+  char *buff_kernel;
   
+  /*Alocar espaço em kernel level com tamanho para a mensagem a escrever = count*/
+  buff_kernel = kzalloc(count * sizeof(char)+1, GFP_KERNEL);
+  if(!buff_kernel) 
+    return -ENOMEM;
 
-  char *echoKernelBuf;
-  echoKernelBuf = kzalloc(count * sizeof(char)+1, GFP_KERNEL);
-
-  if(!echoKernelBuf) return -ENOMEM;
+  /*Adress for transmitter buffer and line status register */
+  TX_adress = COM1 + UART_TX;
+  LSR_adress = COM1 + UART_LSR; 
   
-  error = copy_from_user(echoKernelBuf, buff, count);
-  
-
-
-    if (error == 0) {
-        printk(KERN_INFO "\n%-10sSent all chars to kernel: %s \n\n","SUCCESS:",echoKernelBuf);
-    } else
-        if (error > 0) {
-        printk(KERN_WARNING "\n%-10sChars missing: %lu \n\n","WARNING:",error);
-    }
-
-  
-  for(i = 0; i<strlen(echoKernelBuf); i++)
-  {
-
-      while( ( ( inb(COM1+UART_LSR) ) & UART_LSR_THRE) == 0 )
-      {
+  for(i = 0; i<count; i++){
+      var = inb(LSR_adress);
+      while(!(var & UART_LSR_THRE) )//Transmit hold register empty... Schedule to release CPU
            schedule(); 
-      }
       
-       outb(echoKernelBuf[i], ( COM1 + UART_TX) );
+       outb(buff_kernel[i],(TX_adress));
        sent++; 
   }
  
-  kfree(echoKernelBuf);
-  printk(KERN_INFO "\n%-10sRETURN - Sent all %d chars: %s \n\n","SUCCESS:",sent,echoKernelBuf);
+  kfree(buff_kernel);
 
+  result = copy_from_user(buff_kernel, buff, count);
+  
+  //Tratamento de erros que podem ocorrer 
+  if (!result) 
+      printk(KERN_INFO "\n%-10sSent all %d chars: %s \n\n","SUCCESS:",sent,buff_kernel);
 
-  return sent; 
+  if (result > 0) 
+      printk(KERN_WARNING "\n%-10sMissing %d chars\n\n","WARNING:",count - result);   
+
+  //return (count - error); //assim retorna o número de caracteres que faltam escrever
+  return sent; // retorna o número de caracteres efectivamente escritos;
 }
 
 module_init(serp_init);

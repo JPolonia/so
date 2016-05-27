@@ -1,7 +1,7 @@
-cmd_/host/lab3/serp.o := gcc -m32 -Wp,-MD,/host/lab3/.serp.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.2/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -O2 -pipe -msoft-float -mpreferred-stack-boundary=2  -march=i686  -mregparm=3 -ffreestanding -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -Iinclude/asm-i386/mach-default -fomit-frame-pointer  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign   -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(serp)"  -D"KBUILD_MODNAME=KBUILD_STR(serp)" -c -o /host/lab3/.tmp_serp.o /host/lab3/serp.c
+cmd_/host/Trabalhos_antigos/T14G03/serp/serp.o := gcc -m32 -Wp,-MD,/host/Trabalhos_antigos/T14G03/serp/.serp.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.1.2/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -O2 -pipe -msoft-float -mpreferred-stack-boundary=2  -march=i686  -mregparm=3 -ffreestanding -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -Iinclude/asm-i386/mach-default -fomit-frame-pointer  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign   -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(serp)"  -D"KBUILD_MODNAME=KBUILD_STR(serp)" -c -o /host/Trabalhos_antigos/T14G03/serp/.tmp_serp.o /host/Trabalhos_antigos/T14G03/serp/serp.c
 
-deps_/host/lab3/serp.o := \
-  /host/lab3/serp.c \
+deps_/host/Trabalhos_antigos/T14G03/serp/serp.o := \
+  /host/Trabalhos_antigos/T14G03/serp/serp.c \
   include/linux/init.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/hotplug.h) \
@@ -334,9 +334,9 @@ deps_/host/lab3/serp.o := \
   include/linux/vmalloc.h \
   include/linux/cdev.h \
   include/linux/ioport.h \
-  /host/lab3/serp.h \
-  /host/lab3/serial_reg.h \
+  /host/Trabalhos_antigos/T14G03/serp/serp.h \
+  /host/Trabalhos_antigos/T14G03/serp/serial_reg.h \
 
-/host/lab3/serp.o: $(deps_/host/lab3/serp.o)
+/host/Trabalhos_antigos/T14G03/serp/serp.o: $(deps_/host/Trabalhos_antigos/T14G03/serp/serp.o)
 
-$(deps_/host/lab3/serp.o):
+$(deps_/host/Trabalhos_antigos/T14G03/serp/serp.o):

@@ -55,7 +55,7 @@ static int serp_init(void){
 		printk(KERN_WARNING "seri: can't get major %d\n", serp_major);
 		return result;
 	}
-	/*----------------END-----------------*/k
+	/*----------------END-----------------*/
 
 	/*---ALLOCATING-CHAR-DEVICE-STRUCT----*/
 	device = kmalloc(sizeof(serp_dev) * serp_minor,GFP_KERNEL);
